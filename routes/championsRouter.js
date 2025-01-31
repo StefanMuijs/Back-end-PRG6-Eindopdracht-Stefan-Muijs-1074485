@@ -45,11 +45,15 @@ championsRouter.put('/champions/:id', async (req, res) => {
 
 championsRouter.get('/champions/:id', async (req, res) => {
     const id = req.params.id;
-    const champion = await Champion.findById(id);
-    if (champion !== null) {
-        res.json(champion);
-    } else {
-        res.status(404).send("Champion doesn't exist");
+    try {
+        const champion = await Champion.findById(id);
+        if (champion) {
+            res.json(champion);
+        } else {
+            res.status(404).send("Champion doesn't exist");
+        }
+    } catch (error) {
+        res.status(500).send("Server error");
     }
 });
 
@@ -99,7 +103,7 @@ championsRouter.post('/champions', async (req, res) => {
             await champion.save();
         }
 
-        res.json({ message: "Champions seeded" });
+        res.status(201).json({ message: "Champions seeded" });
     }
 
     const { name, role, region, abilities, lore } = req.body;
